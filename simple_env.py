@@ -20,7 +20,12 @@ class SimpleEnv():
         self.tasks = np.random.rand(n_tasks, 2)
 
         self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool)
-        
+        self.agent_assignments = []
+        #build agent assignment list
+        for robot in range(self.n_agents):
+            inds = np.arange(self.n_tasks)
+            assigned_tasks = inds[self.assignment_matrix[robot, :]]
+            self.agent_assignments.append(assigned_tasks)
         self.done = np.zeros((n_agents,),dtype=bool)
 
     def step(self, action):
@@ -37,8 +42,7 @@ class SimpleEnv():
 
     def check_progress(self):
         for robot in range(self.n_agents):
-            inds = np.arange(self.n_tasks)
-            assigned_tasks = inds[self.assignment_matrix[robot,:]]
+            assigned_tasks = self.agent_assignments[robot]
             for task in assigned_tasks:
                 loc = self.tasks[task,:]
                 dist = np.linalg.norm(loc-self.x[robot,:])
