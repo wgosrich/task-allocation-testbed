@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import animation
 
 class SimpleEnv():
     """
@@ -23,6 +25,7 @@ class SimpleEnv():
         self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool)
         self.agent_assignments = []
         self.done = np.zeros((self.n_agents,), dtype=bool)
+        self.state_history = []
 
 
     def step(self, action):
@@ -35,6 +38,7 @@ class SimpleEnv():
         self.x = self.x + self.dt*action
 
         self.check_progress()
+        self.state_history.append(self.x)
         return self.x, self.done
 
     def check_progress(self):
@@ -52,3 +56,33 @@ class SimpleEnv():
             inds = np.arange(self.n_tasks)
             assigned_tasks = inds[self.assignment_matrix[robot, :]]
             self.agent_assignments.append(assigned_tasks)
+
+    def plot(self):
+        # animate
+        fig = plt.figure()
+        ax = fig.add_subplot(111, autoscale_on=False, xlim=(-2, 2), ylim=(-2, 2))
+        ax.set_aspect('equal')
+        ax.grid()
+
+        circles = []
+
+        def init():
+            for r in range(self.n_agents):
+                circles.append(
+                    plt.Circle((self.state_history[0][r, :]), 0.2, facecolor='cornflowerblue', edgecolor='k', linewidth=1))
+
+                ax.add_patch(circles[r])
+
+            for task in range(self.n_tasks):
+                ax.add_patch(plt.Circle(self.tasks[task, :], 0.3, facecolor='lawngreen', edgecolor='k', linewidth=1))
+
+            return circles
+
+        def animate(i):
+            for r in range(self.n_agents):
+                circles[r].center = self.state_history[i][r, :]
+            return circles
+
+        ani = animation.FuncAnimation(fig, animate, range(len(self.state_history)),
+                                      interval=self.dt * 1000, blit=False, init_func=init)
+        plt.show()
