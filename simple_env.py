@@ -19,11 +19,12 @@ class SimpleEnv():
         #initialize robot state
         self.x = (np.random.rand(self.n_agents,2)-0.5)*4
 
-        #choose random goals
+        #---------task variables-------------
+        #choose random task locations
         self.tasks = (np.random.rand(self.n_tasks, 2)-0.5)*4
 
         self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool)
-        self.agent_assignments = []
+        self.assignment_list = [] #ordered list of tasks assigned to each agent, by task number
         self.done = np.zeros((self.n_agents,), dtype=bool)
         self.state_history = []
 
@@ -43,7 +44,7 @@ class SimpleEnv():
 
     def check_progress(self):
         for robot in range(self.n_agents):
-            assigned_tasks = self.agent_assignments[robot]
+            assigned_tasks = self.assignment_list[robot]
             for task in assigned_tasks:
                 loc = self.tasks[task,:]
                 dist = np.linalg.norm(loc-self.x[robot,:])
@@ -55,7 +56,12 @@ class SimpleEnv():
         for robot in range(self.n_agents):
             inds = np.arange(self.n_tasks)
             assigned_tasks = inds[self.assignment_matrix[robot, :]]
-            self.agent_assignments.append(assigned_tasks)
+            self.assignment_list.append(assigned_tasks)
+
+    def build_assignment_matrix(self):
+        for robot in range(self.n_agents):
+            assignment = self.assignment_list[robot]
+            self.assignment_matrix[robot,assignment] = True
 
     def plot(self):
         # animate

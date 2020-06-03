@@ -13,3 +13,8 @@ Controller modules take the state and goal information from the environment and 
 
 ### Supervisors
 (TODO:) Supervisor modules wrap the controller and planner modules, and perform real-time supervision of the system. It can order re-planning, change control inputs to the robots (to avoid collisions, for example), and perform task swaps, among any other required capabilities.
+
+
+### todos:
+* [ ] make "reset" function for environment
+* [ ] 

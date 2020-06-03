@@ -13,21 +13,20 @@ robot_diameter = env.robot_diameter
 planner = simple_planner.SimplePlanner()
 
 # compute an assignment
-assignment = planner.plan(env.x,env.tasks)
-env.assignment_matrix = assignment
-env.build_agent_assignment()
+assignment_list = planner.plan(env.x,env.tasks)
+env.assignment_list = assignment_list
+env.build_assignment_matrix()
 
 # run controller
 t = 0
 done = False
-state_history = []
 
 while t < nsteps and not done:
      
     # calculate controls
     actions = np.zeros((env.n_agents,2))
     for robot in range(env.n_agents):
-        assigned_tasks = env.agent_assignments[robot]
+        assigned_tasks = env.assignment_list[robot]
         for task in assigned_tasks:
             loc = env.tasks[task,:]
             dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
@@ -35,8 +34,6 @@ while t < nsteps and not done:
     # apply controls
     newstate, completion = env.step(actions)
 
-    # record results
-    state_history.append(newstate)
     done = completion.all()
     t += 1
 
