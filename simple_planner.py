@@ -11,4 +11,4 @@ class SimplePlanner():
         n_tasks = task_state.shape[0]
         assert n_agents == n_tasks
 
-        return np.eye(n_tasks)
+        return np.eye(n_tasks,dtype=bool)

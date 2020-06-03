@@ -2,16 +2,20 @@ import numpy as np
 import simple_env
 import simple_planner
 import matplotlib.pyplot as plt
+from matplotlib import animation
 
 nsteps = 1000
-vel = 1
+vel = 0.5
 
 env = simple_env.SimpleEnv()
+robot_diameter = env.robot_diameter
+
 planner = simple_planner.SimplePlanner()
 
 #compute an assignment
 assignment = planner.plan(env.x,env.tasks)
 env.assignment_matrix = assignment
+env.build_agent_assignment()
 
 #run controller
 t = 0
@@ -28,14 +32,14 @@ while t<nsteps and not done:
             loc = env.tasks[task,:]
             dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
             actions[robot,:] = dir*vel
-         
     #apply controls
     newstate,completion = env.step(actions)
 
     #record results
     state_history.append(newstate)
     done = completion.all()
-
+    t += 1
+tfinal = t
 
 #animate
 fig = plt.figure()
@@ -43,28 +47,27 @@ ax = fig.add_subplot(111, autoscale_on=False, xlim=(-2, 2), ylim=(-2, 2))
 ax.set_aspect('equal')
 ax.grid()
 
-line, = ax.plot([], [], 'o-', lw=2)
-time_template = 'time = %.1fs'
-time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
-
+circles = []
 
 def init():
-    line.set_data([], [])
-    time_text.set_text('')
-    return line, time_text
+    for r in range(env.n_agents):
+        circles.append(plt.Circle((state_history[0][r,:]),0.2,facecolor='cornflowerblue',edgecolor='k',linewidth=1))
 
+        ax.add_patch(circles[r])
+
+    for task in range(env.n_tasks):
+        ax.add_patch(plt.Circle(env.tasks[task,:],0.3,facecolor='lawngreen',edgecolor='k',linewidth=1))
+
+    return circles
 
 def animate(i):
-    thisx = [0, x1[i], x2[i]]
-    thisy = [0, y1[i], y2[i]]
-
-    line.set_data(thisx, thisy)
-    time_text.set_text(time_template % (i*dt))
-    return line, time_text
+    for r in range(env.n_agents):
+        circles[r].center = state_history[i][r,:]
+    return circles
 
 
-ani = animation.FuncAnimation(fig, animate, range(1, len(y)),
-                              interval=dt*1000, blit=True, init_func=init)
+ani = animation.FuncAnimation(fig, animate, range(tfinal),
+                              interval=env.dt*1000, blit=False, init_func=init)
 plt.show()
 
 
