@@ -13,19 +13,29 @@ class SimpleEnv():
         self.dt = 0.1
         self.eps = 0.1
         self.n_agents = 3
-        self.n_tasks = 3
+        self.n_tasks = 4
         self.robot_diameter = 0.5
 
         #initialize robot state
         self.x = (np.random.rand(self.n_agents,2)-0.5)*4
 
-        #---------task variables-------------
-        #choose random task locations
+        # ---------task variables-------------
+        # choose random task locations
         self.tasks = (np.random.rand(self.n_tasks, 2)-0.5)*4
 
-        self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool)
-        self.assignment_list = [] #ordered list of tasks assigned to each agent, by task number
-        self.done = np.zeros((self.n_agents,), dtype=bool)
+        # task dependency matrix:
+        # a "1" in row i, column j represents the dependence of task i on task j
+        self.task_dependency_matrix = np.zeros((self.n_tasks,self.n_tasks))
+        # test case: make task 4 dependent on task 1
+        self.task_dependency_matrix[3,0] = 1
+
+        # task_readiness vector represents the percentage of dependencies that are fulfilled for task i
+        # a value of 1 means the task is ready
+        self.task_readiness = np.zeros((self.n_tasks,))
+
+        self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool) # a "1" in row i, column j means task j is assigned to robot i
+        self.assignment_list = [] # ordered list of tasks assigned to each agent, by task number
+        self.task_done = np.zeros((self.n_tasks,), dtype=bool)
         self.state_history = []
 
 
@@ -40,7 +50,7 @@ class SimpleEnv():
 
         self.check_progress()
         self.state_history.append(self.x)
-        return self.x, self.done
+        return self.x, self.task_done
 
     def check_progress(self):
         for robot in range(self.n_agents):
@@ -49,7 +59,9 @@ class SimpleEnv():
                 loc = self.tasks[task,:]
                 dist = np.linalg.norm(loc-self.x[robot,:])
                 if dist<self.eps:
-                    self.done[task] = True
+                    self.task_done[task] = True
+        # propagate updates to task_readiness vector
+        self.update_task_readiness()
 
     def build_agent_assignment(self):
         # build agent assignment list
@@ -62,6 +74,11 @@ class SimpleEnv():
         for robot in range(self.n_agents):
             assignment = self.assignment_list[robot]
             self.assignment_matrix[robot,assignment] = True
+            
+    def update_task_readiness(self):
+        task_dependency_count = np.sum(self.task_dependency_matrix,axis=1) # count the number of tasks each task is dependent upon
+        task_dependency_current = self.task_dependency_matrix @ self.task_done
+        self.task_readiness = np.nan_to_num(np.divide(task_dependency_count,task_dependency_current),nan=1,posinf=1) #if zero dependencies, gives 1
 
     def plot(self):
         # animate

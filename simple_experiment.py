@@ -22,15 +22,16 @@ t = 0
 done = False
 
 while t < nsteps and not done:
-     
+
     # calculate controls
     actions = np.zeros((env.n_agents,2))
     for robot in range(env.n_agents):
         assigned_tasks = env.assignment_list[robot]
         for task in assigned_tasks:
-            loc = env.tasks[task,:]
-            dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
-            actions[robot,:] = dir*vel
+            if (not env.task_done[task]) and env.task_readiness[task]==1:
+                loc = env.tasks[task,:]
+                dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
+                actions[robot,:] = dir*vel
     # apply controls
     newstate, completion = env.step(actions)
 
