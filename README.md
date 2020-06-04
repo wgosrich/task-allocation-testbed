@@ -2,6 +2,8 @@
 
 This project creates a testbed for multi-agent task allocation strategies using a modular structure (inspired by OpenAI Gym). The main components of this structure are laid out below.
 
+![](imgs/most_recent_animation.gif)
+
 ### Environments
 The environment files hold simple simulation environments for the robot systems. They include a step function to calculate dynamics, and hold the state of the robots in the system, the state of tasks/goals and relevant constraints, and other information such as obstacle location. (TODO: maybe this should be structured as an "experiment" that holds task/goal info and constraints, so different scenarios can be run on the same environment.)
 
