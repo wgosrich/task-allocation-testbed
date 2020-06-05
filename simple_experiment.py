@@ -2,12 +2,14 @@ import numpy as np
 import simple_env
 import simple_planner
 import matplotlib.pyplot as plt
+import one_to_one_params
+import dependency_test_params
 from matplotlib import animation
 
 nsteps = 1000
 vel = 0.5
 
-env = simple_env.SimpleEnv()
+env = simple_env.SimpleEnv(dependency_test_params)
 robot_diameter = env.robot_diameter
 
 planner = simple_planner.SimplePlanner()

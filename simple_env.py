@@ -9,25 +9,23 @@ class SimpleEnv():
 
     """
 
-    def __init__(self):
-        self.dt = 0.1
-        self.eps = 0.1
-        self.n_agents = 3
-        self.n_tasks = 4
+    def __init__(self, params):
+        self.dt = params.dt
+        self.eps = params.eps
+        self.n_agents = params.n_agents
+        self.n_tasks = params.n_tasks
         self.robot_diameter = 0.5
 
         #initialize robot state
         self.x = (np.random.rand(self.n_agents,2)-0.5)*4
 
         # ---------task variables-------------
-        # choose random task locations
-        self.tasks = (np.random.rand(self.n_tasks, 2)-0.5)*4
+        # import task locations
+        self.tasks = params.tasks
 
-        # task dependency matrix:
+        # import task dependency matrix:
         # a "1" in row i, column j represents the dependence of task i on task j
-        self.task_dependency_matrix = np.zeros((self.n_tasks,self.n_tasks))
-        # test case: make task 4 dependent on task 1
-        self.task_dependency_matrix[3,0] = 1
+        self.task_dependency_matrix = params.task_dependency_matrix
 
         # task_readiness vector represents the percentage of dependencies that are fulfilled for task i
         # a value of 1 means the task is ready
