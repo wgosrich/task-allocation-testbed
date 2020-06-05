@@ -4,6 +4,14 @@ This project creates a testbed for multi-agent task allocation strategies using 
 
 ![](imgs/most_recent_animation.gif)
 
+### Usage
+
+from the task-allocation directory, run `python3 simple_experiment.py`
+
+The `simple_experiment` is a script that instantiates the testbed, assembling the modules together and running the experiment. At the top, we import a `...params.py` file. These parameter files include experiment-specific data, such as number of agents and tasks, locations of the agents and tasks, dependencies of the tasks, etc. This param file is the passed into the `simple_environment` instantiation, where simulation takes place. 
+
+The `one_to_one_params` file includes an experiment with 3 robots and 3 tasks. It is a one-to-one assignment test. The `dependency_test_params` file includes an experiment with 3 robots and 4 tasks, and one dependency (task 4 on task 1).
+
 ### Environments
 The environment files hold simple simulation environments for the robot systems. They include a step function to calculate dynamics, and hold the state of the robots in the system, the state of tasks/goals and relevant constraints, and other information such as obstacle location. (TODO: maybe this should be structured as an "experiment" that holds task/goal info and constraints, so different scenarios can be run on the same environment.)
 
@@ -19,4 +27,4 @@ Controller modules take the state and goal information from the environment and 
 
 ### todos:
 * [ ] make "reset" function for environment
-* [ ] 
+* [ ] figure out if need to pass environment into planner/controller
