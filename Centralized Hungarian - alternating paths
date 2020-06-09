@@ -1,1 +1,29 @@
+import networkx as nx
+from networkx.algorithms import bipartite
+import numpy as np
+import scipy
 
+n=6
+
+wts=scipy.sparse.lil_matrix([[3,4,3,5,5,2],[5,8,4,3,6,1],[9,2,1,7,9,4],[3,4,3,5,4,6],[8,7,2,5,5,3],[3,2,1,4,6,3]]) #types of sparse matrix
+B=bipartite.matrix.from_biadjacency_matrix(wts)
+
+#node labels
+left_nodes, right_nodes = bipartite.sets(B)
+l_wts = {node: max(wts.toarray()[i]) for i, node in enumerate(left_nodes)} 
+r_wts = {node: 0 for node in right_nodes}
+
+#equality subgraph
+eq_subgraph = nx.Graph()
+eq_subgraph.add_nodes_from(left_nodes, bipartite=0)
+eq_subgraph.add_nodes_from(right_nodes, bipartite=1)
+edges = ((edge[0], edge[1], {'weight': edge[2]['weight']})
+        if (l_wts[edge[0]] + r_wts[edge[1]] == edge[2]['weight'])
+        else (edge[0], edge[1], {'weight': 0})
+        for edge in B.edges(data=True))
+
+# eq_subgraph.update(edges)
+eq_subgraph.add_edges_from(edges)
+
+# maximum matching
+nx.bipartite.maximum_matching(eq_subgraph)
