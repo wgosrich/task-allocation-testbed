@@ -12,10 +12,10 @@ vel = 0.5
 env = simple_env.SimpleEnv(dependency_test_params)
 robot_diameter = env.robot_diameter
 
-planner = simple_planner.SimplePlanner()
+planner = simple_planner.SimplePlanner(env)
 
 # compute an assignment
-assignment_list = planner.plan(env.x,env.tasks)
+assignment_list = planner.plan()
 env.assignment_list = assignment_list
 env.build_assignment_matrix()
 

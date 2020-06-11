@@ -3,10 +3,13 @@ import numpy as np
 
 class SimplePlanner():
 
-    def __init__(self):
-        pass
+    def __init__(self,env):
+        self.env = env
 
-    def plan(self, agent_state, task_state):
+    def plan(self):
+        agent_state = self.env.x
+        task_state = self.env.tasks
+
         """
         :param agent_state:  n_agents x state_space_dim numpy array, where row i represents the state of agent i
         :param task_state: n_tasks x task_state_space_dim numpy array, where row i represents the state (location) of agent i
