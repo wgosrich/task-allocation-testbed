@@ -76,3 +76,5 @@ while(not matching.is_perfect_matching(B,Max_match)):
   #Min vertex cover
   Min_vertex = bipartite.matching.to_vertex_cover(eq_subgraph, Max_match, top_nodes=left_nodes)
 
+m=list(Max_match.values())
+# return m[0:n]
