@@ -4,6 +4,9 @@ import numpy as np
 class SimplePlanner():
 
     def __init__(self,env):
+        """
+        :param env: the environment instance, so that the planner can reference environment vars
+        """
         self.env = env
 
     def plan(self):
@@ -11,8 +14,6 @@ class SimplePlanner():
         task_state = self.env.tasks
 
         """
-        :param agent_state:  n_agents x state_space_dim numpy array, where row i represents the state of agent i
-        :param task_state: n_tasks x task_state_space_dim numpy array, where row i represents the state (location) of agent i
         :return: assignment_list: a list where entry i is an ordered list of the tasks (by number) assigned to robot i. e.g.
             [2,7,5]
         """
