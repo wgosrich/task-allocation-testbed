@@ -1,6 +1,7 @@
 import numpy as np
 import simple_env
 import simple_planner
+import centralized_hungarian_nx
 import matplotlib.pyplot as plt
 import one_to_one_params
 import dependency_test_params
@@ -12,7 +13,7 @@ vel = 0.5
 env = simple_env.SimpleEnv(dependency_test_params)
 robot_diameter = env.robot_diameter
 
-planner = simple_planner.SimplePlanner(env)
+planner = centralized_hungarian_nx.CentralizedHungarianPlanner(env)
 
 # compute an assignment
 assignment_list = planner.plan()
