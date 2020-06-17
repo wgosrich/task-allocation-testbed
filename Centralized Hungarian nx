@@ -92,6 +92,6 @@ class CentralizedHungarianPlanner():
           Min_vertex = bipartite.matching.to_vertex_cover(eq_subgraph, Max_match, top_nodes=left_nodes)
 
         m=list(Max_match.values())
-        l = [x-n for x in m]
+        l = [[x-n] for x in m]
         print(l[0:n], 'Allocation list ret')
         return l[0:n]
