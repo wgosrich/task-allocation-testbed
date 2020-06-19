@@ -13,7 +13,7 @@ vel = 0.5
 env = simple_env.SimpleEnv(dependency_test_params)
 robot_diameter = env.robot_diameter
 
-planner = centralized_hungarian_nx.CentralizedHungarianPlanner(env)
+planner = simple_planner.SimplePlanner(env)
 
 # compute an assignment
 assignment_list = planner.plan()
@@ -35,6 +35,7 @@ while t < nsteps and not done:
                 loc = env.tasks[task,:]
                 dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
                 actions[robot,:] = dir*vel
+                break
     # apply controls
     newstate, completion = env.step(actions)
 
