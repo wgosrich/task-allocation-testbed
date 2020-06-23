@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.io as sio
 import simple_env
 import simple_planner
 import centralized_hungarian_nx
@@ -23,6 +24,7 @@ env.build_assignment_matrix()
 # run controller
 t = 0
 done = False
+current_tasks = np.zeros((env.n_agents,))
 
 while t < nsteps and not done:
 
@@ -31,11 +33,17 @@ while t < nsteps and not done:
     for robot in range(env.n_agents):
         assigned_tasks = env.assignment_list[robot]
         for task in assigned_tasks:
-            if (not env.task_done[task]) and env.task_readiness[task]==1:
-                loc = env.tasks[task,:]
-                dir = (loc-env.x[robot,:])/np.linalg.norm(loc-env.x[robot,:])
-                actions[robot,:] = dir*vel
-                break
+            if (not env.task_done[task]):
+                if not env.task_readiness[task]==1: #task is not ready
+                    loc = env.x[robot,:] #don't move
+                    dir = np.zeros((2,))
+                    actions[robot, :] = dir * vel
+                else:
+                    loc = env.tasks[task,:] #move towards location
+                    dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
+                    actions[robot, :] = dir * vel
+                    break
+
     # apply controls
     newstate, completion = env.step(actions)
 
@@ -44,3 +52,5 @@ while t < nsteps and not done:
 
 env.plot()
 
+#export data to matlab
+#sio.savemat(mat_inputs,)
