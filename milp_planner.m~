@@ -1,4 +1,4 @@
-function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector)
+function [x,A,Aeq,b] = milp_planner(na,nk,dependency,cost_vector)
 
     %% MILP formulation of task allocation problem with task dependencies
 
@@ -226,12 +226,9 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     end
     sorted_start_times = sortrows(start_times);
     
-    assignment_list = cell(1,na);
+    assignment_list = cell(1,na)
     for ii = 1:nk
-        disp(['at time ', num2str(sorted_start_times(ii,1)), ' task ' ,num2str(sorted_start_times(ii,2)), ' is started by robot ', num2str(sorted_start_times(ii,3))]); 
-        current_cell = assignment_list{sorted_start_times(ii,3)}
-        current_cell(end+1) = sorted_start_times(ii,2)
-        assignment_list{sorted_start_times(ii,3)} = current_cell
+      disp(['at time ', num2str(sorted_start_times(ii,1)), ' task ' ,num2str(sorted_start_times(ii,2)), ' is started by robot ', num2str(sorted_start_times(ii,3))]); 
     end
 
 
@@ -245,8 +242,12 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
         end
     end
 
-    disp(assignment_list)
+    for ia = 0:na-1
+        for ik = 0:nk-1
+           if x( 
         
+        end
+    end
 end
 
 

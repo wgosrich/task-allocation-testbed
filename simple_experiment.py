@@ -11,12 +11,23 @@ from matplotlib import animation
 nsteps = 1000
 vel = 0.5
 
+def get_list_from_file(filename='matlab_out'):
+    d = sio.loadmat(filename)
+    list_raw = d['assignment_list']
+    print(list_raw)
+    a_list = []
+    for item in list_raw[0]:
+        a_list.append(item[0])
+    return a_list
+
+
 env = simple_env.SimpleEnv(dependency_test_params)
 robot_diameter = env.robot_diameter
 
 planner = simple_planner.SimplePlanner(env)
 
 # compute an assignment
+#assignment_list = get_list_from_file() #use this line if retrieving plan from file
 assignment_list = planner.plan()
 env.assignment_list = assignment_list
 env.build_assignment_matrix()
@@ -38,6 +49,7 @@ while t < nsteps and not done:
                     loc = env.x[robot,:] #don't move
                     dir = np.zeros((2,))
                     actions[robot, :] = dir * vel
+                    break
                 else:
                     loc = env.tasks[task,:] #move towards location
                     dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
@@ -53,4 +65,7 @@ while t < nsteps and not done:
 env.plot()
 
 #export data to matlab
-#sio.savemat(mat_inputs,)
+sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.linalg.norm(env.tasks,axis=1)})
+
+a_list = get_list_from_file()
+print(a_list)

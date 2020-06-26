@@ -16,7 +16,7 @@ cost_vector = [2 2 2 6 2 2 1 1 1 2 2 2];
 %---------------------------------------------------------------------
 %---------------end problem specific inputs---------------------------
 
-[x,A,Aeq,b] = milp_planner(na,nk,dependency,cost_vector);
+[x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector);
 
 %% test 2
 na = 3
@@ -37,5 +37,14 @@ end
 dependency = zeros(nk);
 dependency(4,1) = 1;
 
-[x,A,Aeq,b] = milp_planner(na,nk,dependency,cost_vector);
+[x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector);
+
+%% import from file
+load('matlab_inputs','-mat')
+
+[x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector);
+
+%save assignment list
+save('matlab_out.mat')
+
 
