@@ -20,7 +20,7 @@ The environment files hold simulation environments for the robot systems. They i
 * has functions to keep track of the state of tasks: whether they are ready to be completed (i.e. all dependencies fulfilled) and whether they have been completed. 
 
 ### Planners
-Planner modules compute the task allocation, through any method. They receive robot and task state information from the environment, and use it to assign a set of tasks to each robot, and an order of task completion or time windows, if required by the experiment. This assignment is returned to the environment.
+Planner modules compute the task allocation, through any method. They receive robot and task state information from the environment, and use it to assign a set of tasks to each robot, and an order of task completion or time windows, if required by the experiment. This assignment is returned to the environment. The new planner"centralized planner6.22.2200" is able to allocate tasks based on C-CAPT algorithm. The user can change the number of robot as well as number of task in one_to_one_params.py / dependency_test_params.py to customize the program.
 
 ### Controllers
 Controller modules take the state and goal information from the environment and compute control commands to take the robot from its initial position along a path to its goals. Controllers can be centralized, or set up to mimic a decentralized system in which robots only use local information.
