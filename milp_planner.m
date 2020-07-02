@@ -151,7 +151,8 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
         end
     end
 
-
+    % TODO: modify this constraint to actually use duration
+    
     % constraint i
     %finish time minus start time must be less than duration
     A(constraint_ind:constraint_ind+nk-1, st_ind:st_ind+nk-1) = eye(nk);
@@ -175,6 +176,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     constraint_ind = constraint_ind+na;
     %}
 
+    % TODO: modify this constraint to actually use travel time
     % constraint  j -- if tasks k and k' are completed consecutively by robot a
     % (i.e. o_kk'^a is true) then ftk-stk' <= 0 
 
