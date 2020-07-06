@@ -15,6 +15,7 @@ class SimpleEnv():
         self.n_agents = params.n_agents
         self.n_tasks = params.n_tasks
         self.robot_diameter = 0.5
+        self.seed_val = None
 
         #initialize robot state
         self.x = (np.random.rand(self.n_agents,2)-0.5)*4
@@ -50,6 +51,13 @@ class SimpleEnv():
         self.check_progress()
         self.state_history.append(self.x)
         return self.x, self.task_done
+
+    def set_seed(self,seed_value):
+        if seed_value==None:
+            self.seed_val = np.random.randint(0,1000)
+        else:
+            self.seed_val = seed_value
+        np.random.seed(self.seed_val)
 
     def check_progress(self):
         for robot in range(self.n_agents):
@@ -127,6 +135,8 @@ class SimpleEnv():
                 task_circles[task].set_facecolor(c)
 
             return circles+task_circles
+
+
 
         ani = animation.FuncAnimation(fig, animate, range(len(self.state_history)),
                                       interval=self.dt * 1000, blit=False, init_func=init)

@@ -2,6 +2,8 @@ import numpy as np
 import scipy.io as sio
 import simple_env
 import simple_planner
+from datetime import datetime
+import os
 import centralized_hungarian_nx
 import matplotlib.pyplot as plt
 import one_to_one_params
@@ -22,6 +24,7 @@ def get_list_from_file(filename='matlab_out'):
 
 
 env = simple_env.SimpleEnv(dependency_test_params)
+env.set_seed(None)
 robot_diameter = env.robot_diameter
 
 planner = simple_planner.SimplePlanner(env)
@@ -64,8 +67,14 @@ while t < nsteps and not done:
 
 env.plot()
 
-#export data to matlab
-sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.linalg.norm(env.tasks,axis=1)})
+# export data
 
-a_list = get_list_from_file()
-print(a_list)
+today = datetime.now()
+
+dir_string = "data/" + today.strftime('%Y%m%d')
+try:
+    os.mkdir(dir_string)
+except FileExistsError:
+    pass
+np.savez(dir_string+"/data_"+ today.strftime("%H%M"),env.seed_val,assignment_list,t,allow_pickle=True)
+sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.linalg.norm(env.tasks,axis=1)})
