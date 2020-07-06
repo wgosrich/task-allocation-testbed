@@ -2,6 +2,7 @@ import numpy as np
 import scipy.io as sio
 import simple_env
 import simple_planner
+import simple_controller
 from datetime import datetime
 import os
 import centralized_hungarian_nx
@@ -11,7 +12,6 @@ import dependency_test_params
 from matplotlib import animation
 
 nsteps = 1000
-vel = 0.5
 
 def get_list_from_file(filename='matlab_out'):
     d = sio.loadmat(filename)
@@ -28,7 +28,7 @@ env.set_seed(None)
 robot_diameter = env.robot_diameter
 
 planner = simple_planner.SimplePlanner(env)
-
+controller = simple_controller.SimpleController(env)
 # compute an assignment
 #assignment_list = get_list_from_file() #use this line if retrieving plan from file
 assignment_list = planner.plan()
@@ -43,21 +43,7 @@ current_tasks = np.zeros((env.n_agents,))
 while t < nsteps and not done:
 
     # calculate controls
-    actions = np.zeros((env.n_agents,2))
-    for robot in range(env.n_agents):
-        assigned_tasks = env.assignment_list[robot]
-        for task in assigned_tasks:
-            if (not env.task_done[task]):
-                if not env.task_readiness[task]==1: #task is not ready
-                    loc = env.x[robot,:] #don't move
-                    dir = np.zeros((2,))
-                    actions[robot, :] = dir * vel
-                    break
-                else:
-                    loc = env.tasks[task,:] #move towards location
-                    dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
-                    actions[robot, :] = dir * vel
-                    break
+    actions = controller.get_actions()
 
     # apply controls
     newstate, completion = env.step(actions)
