@@ -40,8 +40,9 @@ robot_diameter = env.robot_diameter
 planner = simple_planner.SimplePlanner(env)
 controller = simple_controller.SimpleController(env)
 # compute an assignment
-#assignment_list = get_list_from_file() #use this line if retrieving plan from file
-assignment_list = planner.plan()
+assignment_list = get_list_from_file() #use this line if retrieving plan from file
+print(assignment_list)
+#assignment_list = planner.plan()
 env.assignment_list = assignment_list
 env.build_assignment_matrix()
 
@@ -73,4 +74,12 @@ try:
 except FileExistsError:
     pass
 np.savez(dir_string+"/data_"+ today.strftime("%H%M"),seed=seed_val,assignment_list=assignment_list,t=t/env.dt,allow_pickle=True)
-sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.linalg.norm(env.tasks,axis=1)})
+
+#generate travel time for matlab
+tt = np.zeros((env.n_tasks**2,1))
+for ii in range(env.n_tasks):
+    for jj in range(env.n_tasks):
+        tt[ii*env.n_tasks+jj] = np.linalg.norm(env.tasks[ii,:]-env.tasks[jj,:])
+print(tt)
+
+sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.zeros((env.n_tasks,)), "travel_time":tt})

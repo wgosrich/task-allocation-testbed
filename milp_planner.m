@@ -233,7 +233,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     for ii = 1:nk
         disp(['at time ', num2str(sorted_start_times(ii,1)), ' task ' ,num2str(sorted_start_times(ii,2)), ' is started by robot ', num2str(sorted_start_times(ii,3))]); 
         current_cell = assignment_list{sorted_start_times(ii,3)};
-        current_cell(end+1) = sorted_start_times(ii,2);
+        current_cell(end+1) = sorted_start_times(ii,2)-1;
         assignment_list{sorted_start_times(ii,3)} = current_cell;
     end
 
