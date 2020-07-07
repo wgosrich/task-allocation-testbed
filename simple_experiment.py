@@ -1,4 +1,15 @@
 import numpy as np
+
+def set_seed(seed_value):
+    if seed_value == None:
+        seed_val = np.random.randint(0, 1000)
+    else:
+        seed_val = seed_value
+    np.random.seed(seed_val)
+    return seed_val
+
+seed_val = set_seed(0)
+
 import scipy.io as sio
 import simple_env
 import simple_planner
@@ -24,7 +35,6 @@ def get_list_from_file(filename='matlab_out'):
 
 
 env = simple_env.SimpleEnv(dependency_test_params)
-env.set_seed(None)
 robot_diameter = env.robot_diameter
 
 planner = simple_planner.SimplePlanner(env)
@@ -62,5 +72,5 @@ try:
     os.mkdir(dir_string)
 except FileExistsError:
     pass
-np.savez(dir_string+"/data_"+ today.strftime("%H%M"),env.seed_val,assignment_list,t,allow_pickle=True)
+np.savez(dir_string+"/data_"+ today.strftime("%H%M"),seed=seed_val,assignment_list=assignment_list,t=t/env.dt,allow_pickle=True)
 sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.linalg.norm(env.tasks,axis=1)})

@@ -21,7 +21,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     z_ind = v_ind + v_len;
     st_ind = z_ind+z_len;
     ft_ind = st_ind+st_len;
-    total_len = ft_ind+ft_len-1;
+    total_len = ft_ind+ft_len-1
 
     %structure of x vector:
     % [ x; o; v; z; st; ft]
@@ -133,9 +133,6 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
 
     A = zeros(nconstraints,total_len);
     b = zeros(nconstraints,1);
-
-    constraint_ind = 1;
-
     %constraint g (new constraint - not from paper
     %if task k depends on k', then stk - ftk' >= 0 ---> -stk + ftk' <= 0
 
@@ -154,7 +151,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     % TODO: modify this constraint to actually use duration
     
     % constraint i
-    %finish time minus start time must be less than duration
+    %start time minus finish time must be less than (negative) duration
     A(constraint_ind:constraint_ind+nk-1, st_ind:st_ind+nk-1) = eye(nk);
     A(constraint_ind:constraint_ind+nk-1, ft_ind:ft_ind+nk-1) = -1*eye(nk);
     b(constraint_ind:constraint_ind+nk-1) = -1*cost_vector;
@@ -214,7 +211,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     f(end) = 1;
 
     options = optimoptions('intlinprog','MaxNodes',200000);
-    x = intlinprog(f, intcon, A, b, Aeq, beq, lb, ub,options);
+    x = intlinprog(f, intcon, A, b, Aeq, beq, lb, ub,options)
     %% display
     c = clock;
     time = [num2str(c(4)),':',num2str(c(5))];
@@ -224,8 +221,11 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
 
     start_times = zeros(nk,3);
     for ii = 0:nk-1
-        start_times(ii+1,:) = [x(st_ind+ii), ii+1, ~x(x_ind+ii)+1];
-
+        for ia = 0:na-1
+            if x(x_ind+ii+ia*nk)
+                start_times(ii+1,:) = [x(st_ind+ii), ii+1, ia+1];
+            end
+        end
     end
     sorted_start_times = sortrows(start_times);
     
