@@ -89,12 +89,15 @@ class SimpleEnv():
         ax = fig.add_subplot(111, autoscale_on=False, xlim=(-2, 2), ylim=(-2, 2))
         ax.set_aspect('equal')
         ax.grid()
-        ax.set_title('Simple Environment')
+        ax.set_title('Simple Environment - most transparent robot has lowest number')
 
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
 
         circles = []
+        circle_colors = []
+        for r in range(self.n_agents):
+            circle_colors.append((0.5,0.5,1,(r+0.5)/self.n_agents))
         task_circles = []
 
         def init():
@@ -102,17 +105,26 @@ class SimpleEnv():
                 task_circle = plt.Circle(self.tasks[task, :], 0.3, facecolor='white', edgecolor='k', linewidth=1,alpha=1)
                 task_circles.append(task_circle)
                 ax.add_patch(task_circles[task])
+                xy = (self.tasks[task,0]-0.1,self.tasks[task,1]-0.1)
+                ax.annotate(str(task+1),xy = xy, xytext=xy)
 
             for r in range(self.n_agents):
                 circles.append(
-                    plt.Circle((self.state_history[0][r, :]), 0.2, facecolor='cornflowerblue', edgecolor='k', linewidth=1))
+                    plt.Circle((self.state_history[0][r, :]), 0.2, facecolor=circle_colors[r], edgecolor='k', linewidth=1))
+                #xy = (self.state_history[0][r, 0] - 0.1, self.state_history[0][r, 1] - 0.1)
+                #ax.annotate(str(r + 1), xy=xy, xytext=xy)
+
                 ax.add_patch(circles[r])
+
 
             return circles+task_circles
 
         def animate(i):
             for r in range(self.n_agents):
                 circles[r].center = self.state_history[i][r, :]
+                #xy = (self.state_history[i][r, 0] - 0.1, self.state_history[i][r, 1] - 0.1)
+                #t = ax.annotate(str(r + 1), xy=xy, xytext=xy)
+                #t.xy = (1,2)
 
             current_task_done = self.task_done_history[i]
             current_readiness = self.task_readiness_history[i]

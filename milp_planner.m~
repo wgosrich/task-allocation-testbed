@@ -95,16 +95,14 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
 
     constraint_ind = constraint_ind+na*nk;
 
-    %add na*nk new constraints to ensure o_11=0, for example
+    %add 2 new constraints to ensure o_11=0, for example
     for ii = 0:na-1
         for jj = 0:nk-1
-            Aeq(constraint_ind,nk* nk*ii+o_ind+jj+jj*nk) = 1;
-            nk* nk*ii+o_ind+jj+jj*nk
-            constraint_ind = constraint_ind+1;
+            Aeq(constraint_ind+ii ,nk* nk*ii+o_ind+jj+1+jj*nk) = 1;
         end
     end
 
-    constraint_ind = constraint_ind+nk;
+    constraint_ind = constraint_ind+2;
 
     % constraint f - every task assigned to robot a has a subsequent task,
     % except for the last task
@@ -213,7 +211,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     f(end) = 1;
 
     options = optimoptions('intlinprog','MaxNodes',200000);
-    x = intlinprog(f, intcon, A, b, Aeq, beq, lb, ub,options);
+    x = intlinprog(f, intcon, A, b, Aeq, beq, lb, ub,options)
     %% display
     c = clock;
     time = [num2str(c(4)),':',num2str(c(5))];
@@ -221,14 +219,11 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     save(namestring,'x');
 
 
-    start_times = double(zeros(nk,3));
+    start_times = zeros(nk,3);
     for ii = 0:nk-1
         for ia = 0:na-1
             if x(x_ind+ii+ia*nk)
-                %x(st_ind+ii)
-                start_times(ii+1,1) = double(x(st_ind+ii));
-                    start_times(ii+1,2) = ii+1;
-                    start_times(ii+1,3) = ia+1;
+                start_times(ii+1,:) = [x(st_ind+ii), ii+1, ia+1];
             end
         end
     end
@@ -246,7 +241,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     for ia = 0:na-1
         for ik = 0:nk-1
             for ikprime = 0:nk-1
-                %o_ind+ia*(nk^2)+ik*nk+ikprime
+                o_ind+ia*(nk^2)+ik*nk+ikprime
                 if x(o_ind+ia*(nk^2)+ik*nk+ikprime)
                    tt = travel_time(ik*nk + ikprime +1);
                    disp(['robot ',num2str(ia+1), ' performs task ' ,num2str(ikprime+1),' after task ',num2str(ik+1)])
@@ -257,7 +252,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
             end
         end
     end
-  
+    st_ind
     disp(assignment_list)
 
         
