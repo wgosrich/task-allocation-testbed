@@ -6,8 +6,13 @@ This project creates a testbed for multi-agent task allocation strategies using 
 
 ### Usage
 
-from the task-allocation directory, run `python3 simple_experiment.py`
+from the task-allocation directory, run `python simple_experiment.py`
 
+Command line arguments can be viewed with `python simple_experiment.py -h`
+* Use `--seed [value]` to set the random number generator seed to [value]. Defaults to completely random.
+* Use `--controller [controller_name]` and `--planner [planner_name]` to set controller or planner. Defaults to `simple_xyz`
+* Use `--planner from_file --filename [filename]` to load a plan from a file [filename]
+* Use `--params [param_file_name]` to use a parameter file specified by [param_file_name]. Defaults to `dependency_test_params`
 The `simple_experiment` is a script that instantiates the testbed, assembling the modules together and running the experiment. At the top, we import a `...params.py` file. These parameter files include experiment-specific data, such as number of agents and tasks, locations of the agents and tasks, dependencies of the tasks, etc. This param file is the passed into the `simple_environment` instantiation, where simulation takes place. 
 
 The `one_to_one_params` file includes an experiment with 3 robots and 3 tasks. It is a one-to-one assignment test. The `dependency_test_params` file includes an experiment with 3 robots and 4 tasks, and one dependency (task 4 on task 1).

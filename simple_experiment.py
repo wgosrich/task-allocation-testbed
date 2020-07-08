@@ -1,6 +1,9 @@
 import numpy as np
 import argparse
-
+import scipy.io as sio
+from datetime import datetime
+import os
+import importlib
 
 def set_seed(seed_value):
     if seed_value == None:
@@ -21,6 +24,7 @@ def get_args():
                         help="seed value for random number generator, int")
     parser.add_argument('--filename', default=None, dest='filename_str', type=str,
                         help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
+    parser.add_argument('--params', default='dependency_test_params',dest='params_name',type=str,help='set the parameter file to be used')
     return parser.parse_args()
 
 
@@ -38,21 +42,15 @@ if __name__ == "__main__":
     args = get_args()
     seed_val = set_seed(args.seed_val)
 
-    import scipy.io as sio
     import simple_env
     import simple_planner
     import simple_controller
-    from datetime import datetime
-    import os
     import centralized_hungarian_nx
-    import matplotlib.pyplot as plt
-    import one_to_one_params
-    import dependency_test_params
-    from matplotlib import animation
 
     # create environment ---------------------------------------------------------
     nsteps = 1000
-    env = simple_env.SimpleEnv(dependency_test_params)
+    params = importlib.import_module(args.params_name)
+    env = simple_env.SimpleEnv(params)
     robot_diameter = env.robot_diameter
 
     # process planner argument------------------------------------------------------
