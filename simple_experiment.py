@@ -1,4 +1,6 @@
 import numpy as np
+import argparse
+
 
 def set_seed(seed_value):
     if seed_value == None:
@@ -8,27 +10,14 @@ def set_seed(seed_value):
     np.random.seed(seed_val)
     return seed_val
 
-seed_val = set_seed(0)
 
-import sys
-import argparse
-import scipy.io as sio
-import simple_env
-import simple_planner
-import simple_controller
-from datetime import datetime
-import os
-import centralized_hungarian_nx
-import matplotlib.pyplot as plt
-import one_to_one_params
-import dependency_test_params
-from matplotlib import animation
+
 
 def get_args():
     parser = argparse.ArgumentParser(description=None)
-    parser.add_argument('--planner', default='simple_planner',type=str, help="planner to use: can be simple_planner, from_file, etc.?")
-    parser.add_argument('--seed',default=None,type=int,help="seed value for random number generator, int")
-    parser.add_argument('--filename',default=None,type=str,help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
+    parser.add_argument('--planner', default='simple_planner', dest='planner', type=str, help="planner to use: can be simple_planner, from_file, etc.?")
+    parser.add_argument('--seed', default=None, dest='seed_val', type=int, help="seed value for random number generator, int")
+    parser.add_argument('--filename', default=None, dest='filename_str', type=str, help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
     return parser.parse_args()
 
 
@@ -47,6 +36,19 @@ def get_list_from_file(filename='matlab_out'):
 
 if __name__ == "__main__":
     args = get_args()
+    seed_val = set_seed(0)
+
+    import scipy.io as sio
+    import simple_env
+    import simple_planner
+    import simple_controller
+    from datetime import datetime
+    import os
+    import centralized_hungarian_nx
+    import matplotlib.pyplot as plt
+    import one_to_one_params
+    import dependency_test_params
+    from matplotlib import animation
 
     nsteps = 1000
     env = simple_env.SimpleEnv(dependency_test_params)
@@ -95,7 +97,6 @@ if __name__ == "__main__":
     for ii in range(env.n_tasks):
         for jj in range(env.n_tasks):
             tt[ii * env.n_tasks + jj] = np.linalg.norm(env.tasks[ii, :] - env.tasks[jj, :])
-    print(tt)
 
     sio.savemat("matlab_inputs", {"na": env.n_agents, "nk": env.n_tasks, "dependency": env.task_dependency_matrix,
                                   "cost_vector": np.zeros((env.n_tasks,)), "travel_time": tt})
