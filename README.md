@@ -32,3 +32,4 @@ Controller modules take the state and goal information from the environment and 
 ### todos:
 * [ ] make "reset" function for environment
 * [ ] figure out if need to pass environment into planner/controller
+* [ ] modify the local controller
