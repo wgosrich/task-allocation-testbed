@@ -13,11 +13,15 @@ def set_seed(seed_value):
 
 def get_args():
     parser = argparse.ArgumentParser(description=None)
-    parser.add_argument('--planner', default='simple_planner', dest='planner', type=str, help="planner to use: can be simple_planner, from_file, etc.?")
-    parser.add_argument('--seed', default=None, dest='seed_val', type=int, help="seed value for random number generator, int")
-    parser.add_argument('--filename', default=None, dest='filename_str', type=str, help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
+    parser.add_argument('--planner', default='simple_planner', dest='planner', type=str,
+                        help="planner to use: can be simple_planner, from_file, etc.?")
+    parser.add_argument('--controller', default='simple_controller', dest='controller', type=str,
+                        help="controller to use: can be simple_controller, others to be implemented")
+    parser.add_argument('--seed', default=None, dest='seed_val', type=int,
+                        help="seed value for random number generator, int")
+    parser.add_argument('--filename', default=None, dest='filename_str', type=str,
+                        help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
     return parser.parse_args()
-
 
 
 def get_list_from_file(filename='matlab_out'):
@@ -28,8 +32,6 @@ def get_list_from_file(filename='matlab_out'):
     for item in list_raw[0]:
         a_list.append(item[0])
     return a_list
-
-
 
 
 if __name__ == "__main__":
@@ -48,12 +50,12 @@ if __name__ == "__main__":
     import dependency_test_params
     from matplotlib import animation
 
-    # create environment ---------------------------------------------------
+    # create environment ---------------------------------------------------------
     nsteps = 1000
     env = simple_env.SimpleEnv(dependency_test_params)
     robot_diameter = env.robot_diameter
 
-    #process arguments------------------------------------------------------
+    # process planner argument------------------------------------------------------
     if args.planner == 'simple_planner':
         planner = simple_planner.SimplePlanner(env)
         assignment_list = planner.plan()
@@ -67,14 +69,18 @@ if __name__ == "__main__":
         else:
             assignment_list = get_list_from_file()
     else:
-        raise Exception('')
+        raise Exception('invalid argument for --planner')
 
+    # process controller argument-------------------------------------------------
+    if args.controller == 'simple_controller':
+        controller = simple_controller.SimpleController(env)
+    else:
+        raise Exception('invalid argument for --controller')
 
-    controller = simple_controller.SimpleController(env)
     env.assignment_list = assignment_list
     env.build_assignment_matrix()
 
-    # run controller
+    # run controller---------------------------------------------------------------
     t = 0
     done = False
     current_tasks = np.zeros((env.n_agents,))
