@@ -10,6 +10,8 @@ def set_seed(seed_value):
 
 seed_val = set_seed(0)
 
+import sys
+import argparse
 import scipy.io as sio
 import simple_env
 import simple_planner
@@ -22,7 +24,14 @@ import one_to_one_params
 import dependency_test_params
 from matplotlib import animation
 
-nsteps = 1000
+def get_args():
+    parser = argparse.ArgumentParser(description=None)
+    parser.add_argument('--planner', default='simple_planner',type=str, help="planner to use: can be simple_planner, from_file, etc.?")
+    parser.add_argument('--seed',default=None,type=int,help="seed value for random number generator, int")
+    parser.add_argument('--filename',default=None,type=str,help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
+    return parser.parse_args()
+
+
 
 def get_list_from_file(filename='matlab_out'):
     d = sio.loadmat(filename)
@@ -34,52 +43,59 @@ def get_list_from_file(filename='matlab_out'):
     return a_list
 
 
-env = simple_env.SimpleEnv(dependency_test_params)
-robot_diameter = env.robot_diameter
 
-planner = simple_planner.SimplePlanner(env)
-controller = simple_controller.SimpleController(env)
-# compute an assignment
-assignment_list = get_list_from_file() #use this line if retrieving plan from file
-print(assignment_list)
-#assignment_list = planner.plan()
-env.assignment_list = assignment_list
-env.build_assignment_matrix()
 
-# run controller
-t = 0
-done = False
-current_tasks = np.zeros((env.n_agents,))
+if __name__ == "__main__":
+    args = get_args()
 
-while t < nsteps and not done:
+    nsteps = 1000
+    env = simple_env.SimpleEnv(dependency_test_params)
+    robot_diameter = env.robot_diameter
 
-    # calculate controls
-    actions = controller.get_actions()
+    planner = simple_planner.SimplePlanner(env)
+    controller = simple_controller.SimpleController(env)
+    # compute an assignment
+    assignment_list = get_list_from_file()  # use this line if retrieving plan from file
+    print(assignment_list)
+    # assignment_list = planner.plan()
+    env.assignment_list = assignment_list
+    env.build_assignment_matrix()
 
-    # apply controls
-    newstate, completion = env.step(actions)
+    # run controller
+    t = 0
+    done = False
+    current_tasks = np.zeros((env.n_agents,))
 
-    done = completion.all()
-    t += 1
+    while t < nsteps and not done:
+        # calculate controls
+        actions = controller.get_actions()
 
-env.plot()
+        # apply controls
+        newstate, completion = env.step(actions)
 
-# export data
+        done = completion.all()
+        t += 1
 
-today = datetime.now()
+    env.plot()
 
-dir_string = "data/" + today.strftime('%Y%m%d')
-try:
-    os.mkdir(dir_string)
-except FileExistsError:
-    pass
-np.savez(dir_string+"/data_"+ today.strftime("%H%M"),seed=seed_val,assignment_list=assignment_list,t=t/env.dt,allow_pickle=True)
+    # export data
 
-#generate travel time for matlab
-tt = np.zeros((env.n_tasks**2,1))
-for ii in range(env.n_tasks):
-    for jj in range(env.n_tasks):
-        tt[ii*env.n_tasks+jj] = np.linalg.norm(env.tasks[ii,:]-env.tasks[jj,:])
-print(tt)
+    today = datetime.now()
 
-sio.savemat("matlab_inputs",{"na":env.n_agents, "nk":env.n_tasks, "dependency":env.task_dependency_matrix, "cost_vector":np.zeros((env.n_tasks,)), "travel_time":tt})
+    dir_string = "data/" + today.strftime('%Y%m%d')
+    try:
+        os.mkdir(dir_string)
+    except FileExistsError:
+        pass
+    np.savez(dir_string + "/data_" + today.strftime("%H%M"), seed=seed_val, assignment_list=assignment_list,
+             t=t / env.dt, allow_pickle=True)
+
+    # generate travel time for matlab
+    tt = np.zeros((env.n_tasks ** 2, 1))
+    for ii in range(env.n_tasks):
+        for jj in range(env.n_tasks):
+            tt[ii * env.n_tasks + jj] = np.linalg.norm(env.tasks[ii, :] - env.tasks[jj, :])
+    print(tt)
+
+    sio.savemat("matlab_inputs", {"na": env.n_agents, "nk": env.n_tasks, "dependency": env.task_dependency_matrix,
+                                  "cost_vector": np.zeros((env.n_tasks,)), "travel_time": tt})
