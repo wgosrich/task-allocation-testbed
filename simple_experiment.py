@@ -11,8 +11,6 @@ def set_seed(seed_value):
     return seed_val
 
 
-
-
 def get_args():
     parser = argparse.ArgumentParser(description=None)
     parser.add_argument('--planner', default='simple_planner', dest='planner', type=str, help="planner to use: can be simple_planner, from_file, etc.?")
@@ -36,7 +34,7 @@ def get_list_from_file(filename='matlab_out'):
 
 if __name__ == "__main__":
     args = get_args()
-    seed_val = set_seed(0)
+    seed_val = set_seed(args.seed_val)
 
     import scipy.io as sio
     import simple_env
@@ -50,16 +48,29 @@ if __name__ == "__main__":
     import dependency_test_params
     from matplotlib import animation
 
+    # create environment ---------------------------------------------------
     nsteps = 1000
     env = simple_env.SimpleEnv(dependency_test_params)
     robot_diameter = env.robot_diameter
 
-    planner = simple_planner.SimplePlanner(env)
+    #process arguments------------------------------------------------------
+    if args.planner == 'simple_planner':
+        planner = simple_planner.SimplePlanner(env)
+        assignment_list = planner.plan()
+    elif args.planner == 'centralized_planner':
+        raise Exception('centralized planner not yet implemented.')
+        assignment_list = planner.plan()
+
+    elif args.planner == 'from_file':
+        if args.filename_str != None:
+            assignment_list = get_list_from_file(args.filename_str)
+        else:
+            assignment_list = get_list_from_file()
+    else:
+        raise Exception('')
+
+
     controller = simple_controller.SimpleController(env)
-    # compute an assignment
-    assignment_list = get_list_from_file()  # use this line if retrieving plan from file
-    print(assignment_list)
-    # assignment_list = planner.plan()
     env.assignment_list = assignment_list
     env.build_assignment_matrix()
 
