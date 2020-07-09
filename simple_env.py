@@ -89,7 +89,7 @@ class SimpleEnv():
         ax = fig.add_subplot(111, autoscale_on=False, xlim=(-2, 2), ylim=(-2, 2))
         ax.set_aspect('equal')
         ax.grid()
-        ax.set_title('Simple Environment - most transparent robot has lowest number')
+        ax.set_title('Simple Environment - lightest robot has lowest number')
 
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
@@ -97,7 +97,7 @@ class SimpleEnv():
         circles = []
         circle_colors = []
         for r in range(self.n_agents):
-            circle_colors.append((0.5,0.5,1,(r+0.5)/self.n_agents))
+            circle_colors.append(((r+0.5)/self.n_agents,(r+0.5)/self.n_agents,(r+0.5)/self.n_agents))
         task_circles = []
 
         def init():
