@@ -1,9 +1,15 @@
-function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector,travel_time)
+function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector,travel_time,x0)
 
     %% MILP formulation of task allocation problem with task dependencies
 
     %matlab MILP solver
-
+    
+    %add na fake tasks that hold start position:
+    %nk = nk+na;
+    %cost_vec_prepend = zeros(1,na);
+    %cost_vector = [cost_vec_prepend,cost_vector];
+    
+    %travel_time
 
     nconstraints = 1000;
     M = 10000; %arbitrary large number that must be larger than the max time expected
@@ -16,12 +22,12 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     ft_len = nk;
 
     x_ind = 1; %start ind for x
-    o_ind = 1 + x_len; %start ind for o
+    o_ind = x_ind + x_len; %start ind for o
     v_ind = o_ind + o_len;
     z_ind = v_ind + v_len;
     st_ind = z_ind+z_len;
     ft_ind = st_ind+st_len;
-    total_len = ft_ind+ft_len-1
+    total_len = ft_ind+ft_len-1 + 1 %add 1 for the FINAL variable, which is the max of the finish times
 
     %structure of x vector:
     % [ x; o; v; z; st; ft]
@@ -41,16 +47,25 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
 
     Aeq = zeros(nconstraints,total_len);
     beq = zeros(nconstraints,1);
+   
+    constraint_ind = 1;
 
+    %contraint 0 - each robot starts with the fake tasks I made up for
+    %start position
+    for ii = 0:na-1
+       Aeq(constraint_ind,v_ind + ii*nk + ii) = 1;
+       beq(constraint_ind) = 1;
+       constraint_ind = constraint_ind + 1;
+    end
+        
 
     %constraint a - each task assigned to one robot
     %nk constraints
     for ii = 0:na-1
-        Aeq(1:nk,1+ii*nk:ii*nk+nk) = eye(nk);
+        Aeq(constraint_ind:constraint_ind + nk-1,1+ii*nk:ii*nk+nk) = eye(nk);
     end
-
-    constraint_ind = nk+1;
-    beq(1:nk) = ones(nk,1);
+    beq(constraint_ind:constraint_ind + nk-1) = ones(nk,1);
+    constraint_ind = constraint_ind + nk;
 
     %constraint b - each robot performs one task first
     %na constraints
@@ -99,7 +114,6 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     for ii = 0:na-1
         for jj = 0:nk-1
             Aeq(constraint_ind,nk* nk*ii+o_ind+jj+jj*nk) = 1;
-            nk* nk*ii+o_ind+jj+jj*nk
             constraint_ind = constraint_ind+1;
         end
     end
@@ -141,7 +155,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     % build A from dependency matrix
     constraint_ind = 1;
     for i = 0:nk-1
-        for j = 0:nk-1
+        for j = 0:(nk-1)
             if dependency(i+1,j+1) %if task i+1 depends on j+1
                 A(constraint_ind,st_ind+i) = -1;
                 A(constraint_ind,ft_ind+j) = 1;
@@ -175,7 +189,6 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     constraint_ind = constraint_ind+na;
     %}
 
-    % IN PROGRESS: modify this constraint to actually use travel time
     % constraint  j -- if tasks k and k' are completed consecutively by robot a
     % (i.e. o_kk'^a is true) then ftk+tt_kk'-stk' <= 0 
     j_start_constraint_ind = constraint_ind;
@@ -191,11 +204,22 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
             end
         end
     end
+    
     j_end_constraint_ind = constraint_ind;
+    
+    
+    %constraint h -- sets a final variable that is the max of the finish
+    %times, which we can use in the objective function
+    for ii = 0:nk-1
+       A(constraint_ind,ft_ind+ii)=1;
+       A(constraint_ind,end) = -1;
+       constraint_ind = constraint_ind + 1;
+    end
+    
     A(constraint_ind:end,:) = [];
     b(constraint_ind:end) = [];
 
-    A2show = A;
+    A2show = Aeq;
     A2show(A2show==M) = 1;
     image = mat2gray(A2show);
     imshow(image)
@@ -236,10 +260,12 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     
     assignment_list = cell(1,na);
     for ii = 1:nk
-        disp(['at time ', num2str(sorted_start_times(ii,1)), ' task ' ,num2str(sorted_start_times(ii,2)), ' is started by robot ', num2str(sorted_start_times(ii,3))]); 
+        disp(['at time ', num2str(sorted_start_times(ii,1)), ' task ' ,num2str(sorted_start_times(ii,2)-1), ' is started by robot ', num2str(sorted_start_times(ii,3))]); 
         current_cell = assignment_list{sorted_start_times(ii,3)};
-        current_cell(end+1) = sorted_start_times(ii,2)-1;
-        assignment_list{sorted_start_times(ii,3)} = current_cell;
+        if sorted_start_times(ii,2) > na
+            current_cell(end+1) = sorted_start_times(ii,2)-1-na;
+            assignment_list{sorted_start_times(ii,3)} = current_cell;
+        end
     end
 
 
@@ -249,7 +275,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
                 %o_ind+ia*(nk^2)+ik*nk+ikprime
                 if x(o_ind+ia*(nk^2)+ik*nk+ikprime)
                    tt = travel_time(ik*nk + ikprime +1);
-                   disp(['robot ',num2str(ia+1), ' performs task ' ,num2str(ikprime+1),' after task ',num2str(ik+1)])
+                   disp(['robot ',num2str(ia+1), ' performs task ' ,num2str(ikprime),' after task ',num2str(ik)])
                    disp(['travel time between tasks is ',num2str(tt)]);
                    
                    

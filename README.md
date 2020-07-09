@@ -2,7 +2,7 @@
 
 This project creates a testbed for multi-agent task allocation strategies using a modular structure (inspired by OpenAI Gym). The main components of this structure are laid out below.
 
-![](imgs/most_recent_animation.gif)
+![](imgs/animation7-9.gif)
 
 ### Usage
 
@@ -34,7 +34,3 @@ Controller modules take the state and goal information from the environment and 
 (TODO:) Supervisor modules wrap the controller and planner modules, and perform real-time supervision of the system. It can order re-planning, change control inputs to the robots (to avoid collisions, for example), and perform task swaps, among any other required capabilities.
 
 
-### todos:
-* [ ] make "reset" function for environment
-* [ ] figure out if need to pass environment into planner/controller
-* [ ] modify the local controller

@@ -108,10 +108,14 @@ if __name__ == "__main__":
              t=t / env.dt, allow_pickle=True)
 
     # generate travel time for matlab
-    tt = np.zeros((env.n_tasks ** 2, 1))
-    for ii in range(env.n_tasks):
-        for jj in range(env.n_tasks):
-            tt[ii * env.n_tasks + jj] = np.linalg.norm(env.tasks[ii, :] - env.tasks[jj, :])
+    ll = env.n_agents+env.n_tasks
+    ltasks = np.concatenate((env.state_history[0],env.tasks),axis=0)
+    tt = np.zeros((ll ** 2, 1))
+    for ii in range(ll):
+        for jj in range(ll):
+            tt[ii * ll + jj] = np.linalg.norm(ltasks[ii, :] - ltasks[jj, :])
 
-    sio.savemat("matlab_inputs", {"na": env.n_agents, "nk": env.n_tasks, "dependency": env.task_dependency_matrix,
-                                  "cost_vector": np.zeros((env.n_tasks,)), "travel_time": tt})
+    ldependency = np.zeros((ll,ll))
+    ldependency[env.n_agents:,env.n_agents:] = env.task_dependency_matrix
+    sio.savemat("matlab_inputs", {"na": env.n_agents, "nk": env.n_tasks+env.n_agents, "dependency": ldependency,
+                                  "cost_vector": np.zeros((ll,)), "travel_time": tt})

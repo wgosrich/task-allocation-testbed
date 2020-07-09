@@ -37,7 +37,7 @@ cost_vector = zeros(1,nk);
 for ii = 1:nk
     cost_vector(ii) = norm(task_states(ii,:));
 end
-cost_vector
+%cost_vector
 dependency = zeros(nk);
 dependency(4,1) = 1;
 
@@ -50,7 +50,7 @@ x0 = zeros(92,1);
 %% import from file
 load('matlab_inputs','-mat')
 
-[x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector,travel_time);
+[x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector,travel_time,x0);
 %travel_time
 
 %save assignment list

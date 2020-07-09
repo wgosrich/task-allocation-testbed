@@ -89,7 +89,7 @@ class SimpleEnv():
         ax = fig.add_subplot(111, autoscale_on=False, xlim=(-2, 2), ylim=(-2, 2))
         ax.set_aspect('equal')
         ax.grid()
-        ax.set_title('Simple Environment - lightest robot has lowest number')
+        ax.set_title('Simple Environment - lightest robot has highest number')
 
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
@@ -106,7 +106,7 @@ class SimpleEnv():
                 task_circles.append(task_circle)
                 ax.add_patch(task_circles[task])
                 xy = (self.tasks[task,0]-0.1,self.tasks[task,1]-0.1)
-                ax.annotate(str(task+1),xy = xy, xytext=xy)
+                ax.annotate(str(task),xy = xy, xytext=xy)
 
             for r in range(self.n_agents):
                 circles.append(
