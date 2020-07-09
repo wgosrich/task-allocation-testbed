@@ -15,7 +15,7 @@ class SimpleController():
             assigned_tasks = env.assignment_list[robot]
             for task in assigned_tasks:
                 if (not env.task_done[task]):
-                    if not env.task_readiness[task] == 1:  # task is not ready
+                    if not True: #env.task_readiness[task] == 1:  # task is not ready
                         loc = env.x[robot, :]  # don't move
                         dir = np.zeros((2,))
                         actions[robot, :] = dir * self.vel
