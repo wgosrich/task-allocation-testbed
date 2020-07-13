@@ -61,7 +61,7 @@ class SimpleEnv():
             for task in assigned_tasks:
                 loc = self.tasks[task,:]
                 dist = np.linalg.norm(loc-self.x[robot,:])
-                if dist<self.eps:
+                if dist<self.eps and self.task_readiness[task]==1:
                     self.task_times[task] += self.dt
                     if self.task_times[task]>self.durations[task]:
                         self.task_done[task] = True
