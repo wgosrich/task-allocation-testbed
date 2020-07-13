@@ -23,6 +23,8 @@ class SimpleEnv():
         # import task locations
         self.tasks = params.tasks
 
+        self.durations = params.durations
+
         # import task dependency matrix:
         # a "1" in row i, column j represents the dependence of task i on task j
         self.task_dependency_matrix = params.task_dependency_matrix
@@ -34,6 +36,8 @@ class SimpleEnv():
         self.assignment_matrix = np.zeros((self.n_agents,self.n_tasks),dtype=bool) # a "1" in row i, column j means task j is assigned to robot i
         self.assignment_list = [] # ordered list of tasks assigned to each agent, by task number
         self.task_done = np.zeros((self.n_tasks,), dtype=bool)
+        self.task_times = np.zeros((self.n_tasks,))
+        self.task_time_history = []
         self.task_done_history = []
         self.state_history = []
 
@@ -58,9 +62,14 @@ class SimpleEnv():
                 loc = self.tasks[task,:]
                 dist = np.linalg.norm(loc-self.x[robot,:])
                 if dist<self.eps:
-                    self.task_done[task] = True
+                    self.task_times[task] += self.dt
+                    if self.task_times[task]>self.durations[task]:
+                        self.task_done[task] = True
+
         donecopy = np.copy(self.task_done)
+        timecopy = np.copy(self.task_times)
         self.task_done_history.append(donecopy)
+        self.task_time_history.append(timecopy)
 
         # propagate updates to task_readiness vector
         self.update_task_readiness()
