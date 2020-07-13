@@ -114,8 +114,12 @@ if __name__ == "__main__":
     for ii in range(ll):
         for jj in range(ll):
             tt[ii * ll + jj] = np.linalg.norm(ltasks[ii, :] - ltasks[jj, :])
+    print(env.durations)
+    print(np.zeros((env.n_agents, 1)))
+    ldurations = np.concatenate((np.zeros((env.n_agents, 1)), env.durations))
+    print(ldurations)
 
     ldependency = np.zeros((ll,ll))
     ldependency[env.n_agents:,env.n_agents:] = env.task_dependency_matrix
     sio.savemat("matlab_inputs", {"na": env.n_agents, "nk": env.n_tasks+env.n_agents, "dependency": ldependency,
-                                  "cost_vector": env.durations, "travel_time": tt})
+                                  "cost_vector": ldurations, "travel_time": tt})

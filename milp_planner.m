@@ -50,7 +50,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
    
     constraint_ind = 1;
 
-    %contraint 0 - each robot starts with the fake tasks I made up for
+    %contraint 0a - each robot starts with the fake tasks I made up for
     %start position
     for ii = 0:na-1
        Aeq(constraint_ind,v_ind + ii*nk + ii) = 1;
@@ -58,7 +58,8 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
        constraint_ind = constraint_ind + 1;
     end
         
-
+    
+    
     %constraint a - each task assigned to one robot
     %nk constraints
     for ii = 0:na-1
