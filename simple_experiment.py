@@ -45,7 +45,7 @@ if __name__ == "__main__":
     import simple_env
     import simple_planner
     import simple_controller
-    import centralized_hungarian_nx
+    #import centralized_hungarian_nx
 
     # create environment ---------------------------------------------------------
     nsteps = 1000

@@ -2,7 +2,7 @@ import numpy as np
 
 class SimpleController():
 
-    def __init__(self,env):
+    def __init__(self, env):
         self.env = env
         self.vel = 0.5
 
