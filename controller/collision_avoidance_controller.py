@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SimpleController():
 
     def __init__(self, env):

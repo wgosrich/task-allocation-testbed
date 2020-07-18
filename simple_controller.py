@@ -1,4 +1,4 @@
-import numpy as np
+mport numpy as np
 
 class SimpleController():
 
@@ -27,3 +27,4 @@ class SimpleController():
                         break
 
         return actions
+
