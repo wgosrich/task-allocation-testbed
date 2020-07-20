@@ -20,12 +20,33 @@ class collisionAvoidance(StateMachine):
         self.env = env
         self.vel = 0.5
 
-    def colllision_detection(self):
-        # if np.linalg.norm(loc - env.x[robot,:]) <= certain value
-        
-    def decison_making(self):
+    def collision_detection(self):
+        collision = False
+        env = self.env
+        actions = np.zeros((env.n_agents, 2))
+        for robot in range(env.n_agents):
+            assigned_tasks = env.assignment_list[robot]
+            for task in assigned_tasks:
+                if not env.task_done[task]:
+                    loc = env.tasks[task,:]
+                    if np.linalg.norm(loc - env.x[robot,:]) < 2:
+                        collision = True
+        return collision
+
+    def decision_making(self, begin, encounter, avoid, end):
         env = self.env
         for robot in range(env.n_agents):
+            robot = collisionAvoidance()
+            if begin is True:
+                robot.begin
+            elif encounter is True:
+                robot.encounter
+            elif avoid is True:
+                robot.avoid
+            elif end is True:
+                robot.end
+
+
         # create different robot instances and store them in a list
         # First i can press something to start the program, then the program will automatically decide when to do circular motion.
         # begin: every robot- robot.begin
@@ -44,6 +65,8 @@ class collisionAvoidance(StateMachine):
                     actions[robot, :] = dir * self.vel
                     break
         return actions
+
+
     def git_action_circular(self):
         env = self.env
         actions = np.zeros(((env.n_agents, 2)))
@@ -53,6 +76,8 @@ class collisionAvoidance(StateMachine):
                 if not env.task_done[task]:
                     loc = env.tasks[task, :]
                     dir =
+                    actions[robot, :] = dir * self.vel
+        return actions
 
         
 
