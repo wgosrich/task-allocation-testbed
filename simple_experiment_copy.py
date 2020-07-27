@@ -87,7 +87,8 @@ if __name__ == "__main__":
     while t < nsteps and not done:
         # calculate controls
 
-        actions = controller.get_actions(t)
+        actions = controller.get_actions()
+
 
         # apply controls
         newstate, completion = env.step(actions)
