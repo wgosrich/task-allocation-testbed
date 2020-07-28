@@ -5,6 +5,10 @@ from datetime import datetime
 import os
 import importlib
 import FSMcontroller
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+Writer = animation.FFMpegWriter(fps = 30, codec = 'libx264')
+Writer = animation.FFMpegWriter(fps = 20, metadata = dict(artist = 'Me'), bitrate = 1800)
 
 def set_seed(seed_value):
     if seed_value == None:

@@ -40,75 +40,29 @@ class CollisionAvoidance(StateMachine):
                             collision = True
         return collision
 
-    # def decision_making(self, begin, encounter, avoid, end):
-    #     env = self.env
-    #     for robot in range(env.n_agents):
-    #         robot = collisionAvoidance()
-    #         if begin is True:
-    #             robot.begin
-    #         elif encounter is True:
-    #             robot.encounter
-    #         elif avoid is True:
-    #             robot.avoid
-    #         elif end is True:
-    #             robot.end
-
-    def get_actions(self, t_duration):
+    def get_actions(self):
         env = self.env
         actions = np.zeros((env.n_agents, 2))
         collision = self.collision_detection()
-        for robot, robot2 in range(env.n_agents):
+        for robot, robot1 in range(env.n_agents):
             assigned_tasks = env.assignment_list[robot]
-            assigned_tasks2 = env.assignment_list[robot2]
-            for task, task2 in assigned_tasks, assigned_tasks2:
-                if not (env.task_done[task] and env.task_done[task2]):
+            assigned_tasks1 = env.assignment_list[robot1]
+            for task, task1 in assigned_tasks, assigned_tasks1:
+                if not (env.task_done[task] and env.task_done[task1]):
                     loc = env.tasks[task, :]
-                    loc2 = env.tasks[task2, :]
+                    loc1 = env.tasks[task1, :]
                     if collision is False:
                         dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
                     else:
-                        dir = ()
+                        dir = self.make_trajectory(loc, loc1)
                         # relate with the interaction with other robots
                     actions[robot, :] = dir * self.vel
                     break
             return actions
 
-# initialization
-# robot class object
-# append
-#
+    def make_trajectory(self, loc, loc1):
+        x = (loc[:,0] + loc1[:,0]) / 2
+        y = (loc[0,:] + loc1[:,0]) / 2
+        dir  = np.cross((loc - [x,y]) / np.linalg.norm(loc - [x,y]), [0,0,1])
+        return dir
 
-# create different robot instances and store them in a list First i can press something to start the program,
-# then the program will automatically decide when to do circular motion. begin: every robot- robot.begin design the
-# dir return action matrix
-#
-#     def
-#
-#     def get_actions_straight(self):
-#         env = self.env
-#         actions = np.zeros((env.n_agents, 2))
-#         for robot in range(env.n_agents):
-#             assigned_tasks = env.assignment_list[robot]
-#             for task in assigned_tasks:
-#                 if not env.task_done[task]:
-#                     loc = env.tasks[task, :]
-#                     dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
-#                     actions[robot, :] = dir * self.vel
-#                     break
-#         return actions
-#
-# # if np. <= 2
-#         # dir  =
-# #elif
-#    # dir = straight
-#     def git_action_circular(self,t):
-#         env = self.env
-#         actions = np.zeros((env.n_agents, 2))
-#         for robot in range(env.n_agents):
-#             assigned_tasks = env.assignment_list[robot]
-#             for task in assigned_tasks:
-#                 if not env.task_done[task]:
-#                     loc = env.tasks[task, :]
-#                     dir =
-#                     actions[robot, :] = dir * self.vel
-#         return actions
