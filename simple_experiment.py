@@ -45,7 +45,8 @@ if __name__ == "__main__":
     import simple_env
     import simple_planner
     import simple_controller
-    #import centralized_hungarian_nx
+    import centralized_hungarian_nx
+    import FSMcontroller
 
     # create environment ---------------------------------------------------------
     nsteps = 1000
@@ -60,18 +61,20 @@ if __name__ == "__main__":
     elif args.planner == 'centralized_planner':
         raise Exception('centralized planner not yet implemented.')
         assignment_list = planner.plan()
-
     elif args.planner == 'from_file':
         if args.filename_str != None:
             assignment_list = get_list_from_file(args.filename_str)
         else:
             assignment_list = get_list_from_file()
+
     else:
         raise Exception('invalid argument for --planner')
 
     # process controller argument-------------------------------------------------
     if args.controller == 'simple_controller':
         controller = simple_controller.SimpleController(env)
+    elif args.controller == 'FSMcontroller':
+        controller = FSMcontroller.CollisionAvoidance(env)
     else:
         raise Exception('invalid argument for --controller')
 
