@@ -28,7 +28,7 @@ class CollisionAvoidance(StateMachine):
         collision = False
         env = self.env
         # actions = np.zeros((env.n_agents, 2))
-        for robot, robot2 in range(env.n_agents), range(env.n_agents):
+        for robot, robot2 in range(env.n_agents):
             assigned_tasks = env.assignment_list[robot]
             assigned_tasks2 = env.assignment_list[robot2]
             for task, task2 in assigned_tasks, assigned_tasks2:
@@ -39,12 +39,13 @@ class CollisionAvoidance(StateMachine):
                         if np.linalg.norm(loc - loc2) < 2:  # set the recognition radius is 2
                             collision = True
         return collision
+    # collision - boolean array
 
     def get_actions(self):
         env = self.env
         actions = np.zeros((env.n_agents, 2))
         collision = self.collision_detection()
-        for robot, robot1 in range(env.n_agents):
+        for robot, robot1 in range(env.n_agents), range(env.n_agents):
             assigned_tasks = env.assignment_list[robot]
             assigned_tasks1 = env.assignment_list[robot1]
             for task, task1 in assigned_tasks, assigned_tasks1:
@@ -63,6 +64,6 @@ class CollisionAvoidance(StateMachine):
     def make_trajectory(self, loc, loc1):
         x = (loc[:,0] + loc1[:,0]) / 2
         y = (loc[0,:] + loc1[:,0]) / 2
-        dir  = np.cross((loc - [x,y]) / np.linalg.norm(loc - [x,y]), [0,0,1])
+        dir = np.cross((loc - [x,y]) / np.linalg.norm(loc - [x,y]), [0,0,1])
         return dir
 
