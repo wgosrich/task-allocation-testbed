@@ -28,16 +28,18 @@ class CollisionAvoidance(StateMachine):
         collision = False
         env = self.env
         # actions = np.zeros((env.n_agents, 2))
-        for robot, robot2 in range(env.n_agents):
-            assigned_tasks = env.assignment_list[robot]
-            assigned_tasks2 = env.assignment_list[robot2]
-            for task, task2 in assigned_tasks, assigned_tasks2:
-                if not env.task_done[task]:
-                    loc = env.tasks[task, :]
+        for robot in range(env.n_agents):
+            for robot2 in range(env.n_agents):
+                assigned_tasks = env.assignment_list[robot]
+                assigned_tasks2 = env.assignment_list[robot2]
+            for task in assigned_tasks:
+                for task1 in assigned_tasks2:
+                    if not env.task_done[task]:
+                        loc = env.tasks[task, :]
                     if not env.task_done[task2]:
                         loc2 = env.tasks[task2, :]
-                        if np.linalg.norm(loc - loc2) < 2:  # set the recognition radius is 2
-                            collision = True
+                    if np.linalg.norm(loc - loc2) < 2:  # set the recognition radius is 2
+                        collision = True
         return collision
     # collision - boolean array
 
