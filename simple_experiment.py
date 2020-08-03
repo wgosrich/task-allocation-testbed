@@ -19,12 +19,13 @@ def get_args():
     parser.add_argument('--planner', default='simple_planner', dest='planner', type=str,
                         help="planner to use: can be simple_planner, from_file, etc.?")
     parser.add_argument('--controller', default='simple_controller', dest='controller', type=str,
-                        help="controller to use: can be simple_controller, others to be implemented")
+                        help="controller to use: can be simple_controller, FSMcontroller")
     parser.add_argument('--seed', default=None, dest='seed_val', type=int,
                         help="seed value for random number generator, int")
     parser.add_argument('--filename', default=None, dest='filename_str', type=str,
                         help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
     parser.add_argument('--params', default='dependency_test_params',dest='params_name',type=str,help='set the parameter file to be used')
+    parser.add_argument('--n_tasks', default=8, dest='n_tasks', type=int, help='number of tasks to use in simulation')
     return parser.parse_args()
 
 
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     # create environment ---------------------------------------------------------
     nsteps = 1000
     params = importlib.import_module(args.params_name)
+    params = params.Params(args)
     env = simple_env.SimpleEnv(params)
     robot_diameter = env.robot_diameter
 
