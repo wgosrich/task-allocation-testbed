@@ -57,20 +57,16 @@ if __name__ == "__main__":
     robot_diameter = env.robot_diameter
 
     # process planner argument------------------------------------------------------
-    if args.planner == 'simple_planner':
-        planner = simple_planner.SimplePlanner(env)
-        assignment_list = planner.plan()
-    elif args.planner == 'centralized_planner':
-        raise Exception('centralized planner not yet implemented.')
-        assignment_list = planner.plan()
-    elif args.planner == 'from_file':
+    if args.planner == 'from_file':
         if args.filename_str != None:
             assignment_list = get_list_from_file(args.filename_str)
         else:
             assignment_list = get_list_from_file()
-
     else:
-        raise Exception('invalid argument for --planner')
+        planner_file =  importlib.import_module(args.planner)
+        planner = planner_file.Planner(env)
+        assignment_list = planner.plan()
+
 
     # process controller argument-------------------------------------------------
     if args.controller == 'simple_controller':

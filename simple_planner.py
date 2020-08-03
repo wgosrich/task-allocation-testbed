@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class SimplePlanner():
+class Planner:
 
     def __init__(self,env):
         """

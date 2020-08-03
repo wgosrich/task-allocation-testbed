@@ -5,7 +5,7 @@ import dependency_test_params
 import one_to_one_params
 
 
-class CentralizedPlanner():
+class Planner:
 
     def __init__(self,env):
         self.env = env
