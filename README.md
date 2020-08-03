@@ -13,9 +13,19 @@ Command line arguments can be viewed with `python simple_experiment.py -h`
 * Use `--controller [controller_name]` and `--planner [planner_name]` to set controller or planner. Defaults to `simple_xyz`
 * Use `--planner from_file --filename [filename]` to load a plan from a file [filename]
 * Use `--params [param_file_name]` to use a parameter file specified by [param_file_name]. Defaults to `dependency_test_params`
+* Use `--n_tasks [integer]` to change the number of tasks in the experiment
 The `simple_experiment` is a script that instantiates the testbed, assembling the modules together and running the experiment. At the top, we import a `...params.py` file. These parameter files include experiment-specific data, such as number of agents and tasks, locations of the agents and tasks, dependencies of the tasks, etc. This param file is the passed into the `simple_environment` instantiation, where simulation takes place. 
 
 The `one_to_one_params` file includes an experiment with 3 robots and 3 tasks. It is a one-to-one assignment test. The `dependency_test_params` file includes an experiment with 3 robots and 4 tasks, and one dependency (task 4 on task 1).
+
+#### Usage with Optimal Solution
+Optimal solution is written in Matlab. It uses Mixed Integer Linear Programming (MILP) to find a plan for the experiment. 
+1. Run an experiment. Doesn't matter what planner you use. **Make sure to use seeding**
+    - ex. `python simple_experiment.py --seed 1 --n_tasks 10`
+    - this creates a file `matlab_inputs.mat` that the MILP planner will use
+2. Open Matlab, and run `milp_from_file.m`
+    - this creates a file `matlab_out.mat` that contains the optimal plan
+3. Now run the experiment, with the planner from file: `python simple_experiment.py --seed 1 --n_tasks 10 --planner from_file`
 
 ### Environments
 The environment files hold simulation environments for the robot systems. They include a step function to calculate dynamics, and hold the state of the robots in the system, the state of tasks/goals and relevant constraints, and other information such as obstacle location. 
