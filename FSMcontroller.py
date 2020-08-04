@@ -1,18 +1,18 @@
-from statemachine import StateMachine, State
+#from statemachine import StateMachine, State
 import numpy as np
 
 
-class CollisionAvoidance(StateMachine):
-    start = State('Start', initial=True)
-    straight = State('Straight')
-    circle = State('Circle')
-    finish = State('Finish')
-    # the lines above describe three possible state robots have: start -> straight, straight -> finish, straight ->
-    # circle, circle -> straight
-    begin = start.to(straight)
-    encounter = straight.to(circle)
-    avoid = circle.to(straight)
-    end = straight.to(finish)
+class CollisionAvoidance():
+    # start = State('Start', initial=True)
+    # straight = State('Straight')
+    # circle = State('Circle')
+    # finish = State('Finish')
+    # # the lines above describe three possible state robots have: start -> straight, straight -> finish, straight ->
+    # # circle, circle -> straight
+    # begin = start.to(straight)
+    # encounter = straight.to(circle)
+    # avoid = circle.to(straight)
+    # end = straight.to(finish)
 
     # these are inputs of FSM
 
@@ -22,6 +22,10 @@ class CollisionAvoidance(StateMachine):
     def __init__(self, env):
         self.env = env
         self.vel = 0.5
+        self.states = np.zeros((env.n_agents,))
+        self.time = np.zeros((env.n_agents,))
+        self.maxtime = 10
+        # zeros mean not in collision
 
     def collision_detection(self):
         # globally detect distance between each robot at every time duration
@@ -39,8 +43,9 @@ class CollisionAvoidance(StateMachine):
                     if not env.task_done[task1]:
                         loc2 = env.tasks[task1, :]
                     if np.linalg.norm(loc - loc2) < 2:  # set the recognition radius is 2
-                        collision = True
-        return collision
+                        self.states[robot] = 1
+                        self.states[robot2] = 1
+        return self.states
     # collision - boolean array
 
     def get_actions(self):
@@ -56,14 +61,18 @@ class CollisionAvoidance(StateMachine):
                     if not (env.task_done[task] and env.task_done[task1]):
                         loc = env.tasks[task, :]
                         loc1 = env.tasks[task1, :]
-                    if collision is False:
+                    if (self.states[robot] is 0) or (self.time[robot] == self.maxtime):
                         dir = (loc - env.x[robot, :]) / np.linalg.norm(loc - env.x[robot, :])
+                        self.time[robot] = 0
+                        self.states[robot] = 0
                     else:
                         dir = self.make_trajectory(loc, loc1)
+                        self.time[robot] += 1
+
                         # relate with the interaction with other robots
                     actions[robot, :] = dir * self.vel
                     break
-            return actions
+        return actions
 
     def make_trajectory(self, loc, loc1):
         x = (loc[0] + loc1[0]) / 2
