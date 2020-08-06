@@ -38,13 +38,13 @@ class Planner:
         conflict_agents = self.conflict_agents
         for a in new_conflict_agents:
             conflict_agents = np.append(conflict_agents,a) if a not in conflict_agents
-
-        sink = 0
+        weak_agent_list = np.zeros((self.n_tasks,))
+        sink = -1
         weak_agent = 0
         weak_task = 0
         assignment_by_task = np.zeros((self.n_tasks,))
-
-        while sink == 0:
+        # TODO how to incorporate task duration in addition to positionn?
+        while sink == -1:
             delta = np.inf
 
             # generate list of other tasks
@@ -75,6 +75,22 @@ class Planner:
             for task in conflict_tasks:
                 self.prices[task] = self.prices[task] + delta
 
-            #TODO finish this. at line 13 in the alg in the paper
+            # don't know what omega data vector is actually for... seems to not be used
+            weak_agent_list[weak_task] = weak_agent #storing for use in assignment
+
+            # list of OTHER agents conflicting weak task:
+            other_agents = np.arange(self.n_agents)[self.assignment[:,weak_task]]
+            if other_agents.size == 0:
+                sink = weak_task
+            else:
+                conflict_tasks.append(weak_task)
+                for a in other_agents:
+                    np.append(conflict_agents,a) if a not in conflict_agents
+
+        #perform assignment
+        task_toassign = sink
+        task_2 = -1 # is this a list???
+        while task_2 != t:
+            task_2 = np.arange(self.n_tasks)[self.assignment[,:]]
 
 
