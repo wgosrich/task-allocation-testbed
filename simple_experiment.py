@@ -106,7 +106,7 @@ if __name__ == "__main__":
     except FileExistsError:
         pass
     np.savez(dir_string + "/data_" + today.strftime("%H%M"), seed=seed_val, assignment_list=assignment_list,
-             t=t / env.dt, allow_pickle=True)
+             t=t*env.dt, allow_pickle=True)
 
     # generate travel time for matlab
     ll = env.n_agents+env.n_tasks
