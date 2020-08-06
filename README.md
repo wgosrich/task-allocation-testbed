@@ -14,6 +14,7 @@ Command line arguments can be viewed with `python simple_experiment.py -h`
 * Use `--planner from_file --filename [filename]` to load a plan from a file [filename]
 * Use `--params [param_file_name]` to use a parameter file specified by [param_file_name]. Defaults to `dependency_test_params`
 * Use `--n_tasks [integer]` to change the number of tasks in the experiment
+* Use `--save` to save the experiment data to a .csv file in the data folder when it's done
 The `simple_experiment` is a script that instantiates the testbed, assembling the modules together and running the experiment. At the top, we import a `...params.py` file. These parameter files include experiment-specific data, such as number of agents and tasks, locations of the agents and tasks, dependencies of the tasks, etc. This param file is the passed into the `simple_environment` instantiation, where simulation takes place. 
 
 The `one_to_one_params` file includes an experiment with 3 robots and 3 tasks. It is a one-to-one assignment test. The `dependency_test_params` file includes an experiment with 3 robots and 4 tasks, and one dependency (task 4 on task 1).
