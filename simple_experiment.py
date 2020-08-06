@@ -113,6 +113,8 @@ if __name__ == "__main__":
         pass
     np.savez(dir_string + "/data_" + today.strftime("%H%M"), seed=seed_val, assignment_list=assignment_list,
              t=t*env.dt, allow_pickle=True)
+
+
     if args.save:
         datafile = open('data/data_log_aug.csv','a')
         datastring = '{},{},{},{},{},{},{},{},{}\n'.format(seed_val, args.planner, args.controller, t*env.dt, plan_time, env.n_agents, env.n_tasks, env.task_dependency_matrix.sum(), today.strftime('%Y%m%d')+today.strftime("%H%M"))

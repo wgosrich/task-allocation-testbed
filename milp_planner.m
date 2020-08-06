@@ -243,7 +243,7 @@ function [x,A,Aeq,b,assignment_list] = milp_planner(na,nk,dependency,cost_vector
     c = clock;
     time = [num2str(c(4)),':',num2str(c(5))];
     namestring = convertCharsToStrings(['data/',date,time,'-data.mat']);
-    save(namestring,'x');
+    % save(namestring,'x');
 
 
     start_times = double(zeros(nk,3));
