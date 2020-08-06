@@ -4,6 +4,7 @@ import scipy.io as sio
 from datetime import datetime
 import os
 import importlib
+import time
 
 def set_seed(seed_value):
     if seed_value == None:
@@ -26,17 +27,19 @@ def get_args():
                         help="if importing from file, specify which file. Otherwise, choose the most recent matlab_out")
     parser.add_argument('--params', default='dependency_test_params',dest='params_name',type=str,help='set the parameter file to be used')
     parser.add_argument('--n_tasks', default=8, dest='n_tasks', type=int, help='number of tasks to use in simulation')
+    parser.add_argument('--save', default=False, dest='save', action='store_true', help='save the data to the csv file')
     return parser.parse_args()
 
 
 def get_list_from_file(filename='matlab_out'):
     d = sio.loadmat(filename)
     list_raw = d['assignment_list']
+    plan_time = d['plan_time']
     print(list_raw)
     a_list = []
     for item in list_raw[0]:
         a_list.append(item[0])
-    return a_list
+    return a_list, plan_time[0][0]
 
 
 if __name__ == "__main__":
@@ -59,14 +62,17 @@ if __name__ == "__main__":
     # process planner argument------------------------------------------------------
     if args.planner == 'from_file':
         if args.filename_str != None:
-            assignment_list = get_list_from_file(args.filename_str)
+            assignment_list, plan_time = get_list_from_file(args.filename_str)
         else:
-            assignment_list = get_list_from_file()
-    else:
-        planner_file =  importlib.import_module(args.planner)
-        planner = planner_file.Planner(env)
-        assignment_list = planner.plan()
+            assignment_list, plan_time = get_list_from_file()
 
+    else:
+        planner_file = importlib.import_module(args.planner)
+        planner = planner_file.Planner(env)
+        start_time = time.time()
+        assignment_list = planner.plan()
+        end_time = time.time()
+        plan_time = end_time-start_time
 
     # process controller argument-------------------------------------------------
     if args.controller == 'simple_controller':
@@ -107,6 +113,11 @@ if __name__ == "__main__":
         pass
     np.savez(dir_string + "/data_" + today.strftime("%H%M"), seed=seed_val, assignment_list=assignment_list,
              t=t*env.dt, allow_pickle=True)
+    if args.save:
+        datafile = open('data/data_log_aug.csv','a')
+        datastring = '{},{},{},{},{},{},{},{}\n'.format(seed_val, args.planner, args.controller, t*env.dt, plan_time, env.n_agents, env.n_tasks, env.task_dependency_matrix.sum())
+        datafile.write(datastring)
+        datafile.close()
 
     # generate travel time for matlab
     ll = env.n_agents+env.n_tasks
