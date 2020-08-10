@@ -28,7 +28,7 @@ def get_args():
     parser.add_argument('--params', default='dependency_test_params',dest='params_name',type=str,help='set the parameter file to be used')
     parser.add_argument('--n_tasks', default=8, dest='n_tasks', type=int, help='number of tasks to use in simulation')
     parser.add_argument('--n_agents', default=3, dest='n_agents', type=int, help='number of agents to use in simulation')
-    parser.add_argument('--n_dependencies', default=3, dest='n_dependencies', type=int, help='number of agents to use in simulation')
+    parser.add_argument('--n_dependencies', default=3, dest='n_dependencies', type=int, help='number of dependencies between tasks')
 
     parser.add_argument('--save', default=False, dest='save', action='store_true', help='save the data to the csv file')
     return parser.parse_args()

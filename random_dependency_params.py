@@ -16,11 +16,12 @@ class Params:
         self.durations = np.random.rand(self.n_tasks, 1)*3 #choose random task durations between 0 and 3
 
         #generate task dependency matrix
-        mask = np.tril(np.random.rand((self.n_tasks,self.n_tasks))) #lower triangular random matrix
+        mask = np.tril(np.random.rand(self.n_tasks,self.n_tasks)) - np.eye(self.n_tasks) #lower triangular random matrix with negative diagonal
+
         self.task_dependency_matrix = np.zeros_like(mask)
 
         for i in range(n_dependencies):
-            maxind = np.argmax(mask)
+            maxind = np.unravel_index(np.argmax(mask), mask.shape)
             self.task_dependency_matrix[maxind] = 1
             mask[maxind] = 0
 
