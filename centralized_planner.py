@@ -1,8 +1,6 @@
 import numpy as np
 import math
 from scipy.optimize import linear_sum_assignment
-import dependency_test_params
-import one_to_one_params
 
 
 class Planner():
@@ -81,3 +79,11 @@ class Planner():
         A = A.astype(int)
         return A
 
+# don't consider dependency chain
+# two main (1) random dependencies - keeping ratio of n_dependencies to n_tasks
+# (2) dependencies test params (default one) - change the n_task with the same dependencies
+# seed it every time run the program
+
+# n_tasks
+# n_tasks, n_dependencies
+# seeds
