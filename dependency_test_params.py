@@ -2,7 +2,7 @@ import numpy as np
 class Params:
 
     def __init__(self, args):
-        self.n_agents = 3
+        self.n_agents = args.n_agents
         self.n_tasks = args.n_tasks
 
         self.dt = 0.1 #time step value
