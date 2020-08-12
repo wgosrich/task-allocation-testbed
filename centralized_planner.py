@@ -71,6 +71,21 @@ class Planner():
             col_indList[i2] = new_col_ind[i2]
             reset_col_ind = new_col_ind.astype(int)
             agent_state = self.agent_state_reset(reset_col_ind[i2], n_agents, self.env.tasks)
+
+
+            # col_indList = np.array(col_indList)
+            # f_col_indList = np.ndarray.flatten(np.array(col_indList))
+            # if np.where(f_col_indList == 3) > np.where(f_col_indList == 5):
+            #     a = np.where(f_col_indList == 3)
+            #     b = np.where(f_col_indList == 5)
+            #     f_col_indList[a], f_col_indList[b] = f_col_indList[b], f_col_indList[a]
+            #     # f_col_indList = f_col_indList.astype(int)
+            #     col_indList = f_col_indList.tolist()
+            # # # for i in col_indList:
+            # # #     int(i)
+
+
+
         assignment_list = [[] for _ in range(n_agents)]
         for i5 in range(math.ceil(n_tasks2 / n_agents)):
             for i7 in range(n_agents):

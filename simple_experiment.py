@@ -132,7 +132,7 @@ if __name__ == "__main__":
         for jj in range(ll):
             tt[ii * ll + jj] = np.linalg.norm(ltasks[ii, :] - ltasks[jj, :])
 
-    ldurations = np.concatenate((np.zeros((env.n_agents, 1)), env.durations))
+    ldurations = np.concatenate((np.zeros((env.n_agents, 1)), env.durations))*2
 
     ldependency = np.zeros((ll,ll))
     ldependency[env.n_agents:,env.n_agents:] = env.task_dependency_matrix
