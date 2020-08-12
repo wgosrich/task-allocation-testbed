@@ -130,7 +130,9 @@ if __name__ == "__main__":
     tt = np.zeros((ll ** 2, 1))
     for ii in range(ll):
         for jj in range(ll):
-            tt[ii * ll + jj] = np.linalg.norm(ltasks[ii, :] - ltasks[jj, :])
+            # multiply by 2 to compensate for controller velocity
+            # TODO: make this an environment parameter
+            tt[ii * ll + jj] = np.linalg.norm(ltasks[ii, :] - ltasks[jj, :])*2
 
     ldurations = np.concatenate((np.zeros((env.n_agents, 1)), env.durations))
 
